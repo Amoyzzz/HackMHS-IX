@@ -1,2 +1,2 @@
 # HackMHS-IX
-hackmhs 9
+Project in 24 hours for the 2024 HackMHS Hackathon
