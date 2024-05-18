@@ -1,6 +1,9 @@
 let xValues = [];
 let absAccel = [];
 let fetchDataInterval = null;
+let times = [];
+let intervals = [];
+let sum = 0.0;
 
 document.addEventListener('DOMContentLoaded', function() {
     const gaugeFill = document.querySelector('.gauge-fill');
@@ -23,10 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const gradientColor = `conic-gradient(#ff0000 ${percentage}%, #eee ${percentage}%)`;
     gauge.style.background = gradientColor;
 });
-
-let times = [];
-let intervals = [];
-let sum = 0.0;
 
 const chart = new Chart(document.getElementById("chart"), {
     type: "line",
