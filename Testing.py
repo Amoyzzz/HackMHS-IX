@@ -6,7 +6,7 @@ import threading
 import random
 
 url = 'http://172.20.10.1/get?'
-what_to_get = ['acc']
+what_to_get = ['acc', 'accX', 'accY', 'accZ']
 
 start_time = time.time()
 data_dict = {}
@@ -18,12 +18,23 @@ def phyphox_data():
     data = json.loads(response)
     current_time = time.time() - start_time
     
-    # Extract acceleration and gyroscope data
     acc_data = data['buffer'][what_to_get[0]]['buffer'][0]
+    acc_dataX = data['buffer'][what_to_get[1]]['buffer'][0]
+    acc_dataY = data['buffer'][what_to_get[2]]['buffer'][0]
+    acc_dataZ = data['buffer'][what_to_get[3]]['buffer'][0]
     
-    #apply high pass filter to data
+    # Apply high pass filter to data
     if acc_data < 0.05:
         acc_data = 0
+    if acc_dataX < 0.05:
+        acc_dataX = 0
+    if acc_dataY < 0.05:
+        acc_dataY = 0
+    if acc_dataZ < 0.05:
+        acc_dataZ = 0
+        
+    with open('acceleration_data.txt', 'a') as file:
+        file.write(f'{current_time}, {acc_data},{acc_dataX},{acc_dataY},{acc_dataZ}\n')
     
     # Append data to dictionaries
     data_dict[current_time] = acc_data
