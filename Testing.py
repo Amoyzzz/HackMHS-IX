@@ -3,10 +3,8 @@ import json
 import time
 import numpy as np
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import threading
 
-url = 'http://172.20.10.1/get?'
-what_to_get = ['acc', 'accX', 'accY', 'accZ']
+# Define the port on which the server will listen
 PORT = 8000
 
 class RequestHandler(BaseHTTPRequestHandler):
@@ -55,6 +53,7 @@ def phyphox_data():
     return data_dict[current_time]
 
 def fastFourierTransform(time_acc_dict):
+    # Extract time and acceleration values from the dictionary
     time_values = np.array(list(time_acc_dict.keys()))
     acceleration_values = np.array([data['acc'] for data in time_acc_dict.values()])
 
@@ -62,13 +61,19 @@ def fastFourierTransform(time_acc_dict):
     fft_result = np.fft.fft(acceleration_values)
 
     # Compute the corresponding frequencies
-    dt = time_values[1] - time_values[0]
+    dt = time_values[1] - time_values[0]  # Assuming uniform time spacing
     frequencies = np.fft.fftfreq(len(time_values), dt)
 
     return frequencies, fft_result
 
+# Define additional variables and parameters
 start_time = time.time()
 data_dict = {}
+movement_detected = False
+movement_times = []
+sampling_interval = 0.1  # Sampling interval in seconds
+url = 'http://172.20.10.1/get?'
+what_to_get = ['acc', 'accX', 'accY', 'accZ']
 
 def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
     server_address = ('', port)
@@ -78,17 +83,44 @@ def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
 
 if __name__ == "__main__":
     # Start the server in a separate thread
+    import threading
     server_thread = threading.Thread(target=run, kwargs={'port': PORT})
     server_thread.daemon = True
     server_thread.start()
 
     # Collect data for a certain duration
-    duration = 10  # Duration in seconds
+    duration = 3  # Duration in seconds
     end_time = start_time + duration
 
     while time.time() < end_time:
-        phyphox_data()
-        time.sleep(1)
+        acc_data = phyphox_data()
+        
+        if acc_data['acc'] > 0.1:
+            if not movement_detected:
+                movement_times.append(time.time())
+                movement_detected = True
+        else:
+            movement_detected = False
 
+        time.sleep(sampling_interval)
+
+    # Perform FFT on the collected data
     returned_frequencies, returned_fft_result = fastFourierTransform(data_dict)
-    print("FFT Frequencies:", returned_frequencies)
+
+    # Remove the first item from the arrays
+    returned_frequencies = returned_frequencies[1:]
+    returned_fft_result = returned_fft_result[1:]
+    power_spectrum = np.abs(returned_fft_result)**2
+
+    # Find the index of the maximum power frequency
+    max_power_freq_index = np.argmax(power_spectrum)
+    max_power_freq = returned_frequencies[max_power_freq_index]
+
+    # Calculate time intervals between consecutive movements at the maximum power frequency
+    movement_intervals = np.diff(movement_times)
+
+    print("Power Spectrum:")
+    print(power_spectrum)
+    print(returned_frequencies)
+    print("Max Power Frequency:", max_power_freq, "Hz")
+    print("Time Intervals between Movements at Max Power Frequency:", movement_intervals)
