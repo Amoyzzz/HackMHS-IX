@@ -1,23 +1,53 @@
-    body {
-    background-color: rgb(31, 31, 31);
-    color: rgb(209, 209, 209);
-    text-align: center;
-  }
+/* Global Styles */
+body {
+  background-color: rgb(31, 31, 31);
+  color: rgb(209, 209, 209);
+  text-align: center;
+  font-size: 18px; /* Increased font size */
+}
 
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Adjusted to min-height */
+  flex-direction: column; /* Center content vertically */
+}
 
-  #chart-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Adjust this if needed */
-  }
+/* Button Styles */
+.button {
+  display: inline-block;
+  padding: 15px 30px; /* Increased padding */
+  font-size: 18px; /* Increased font size */
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-  #myChart {
-    /* Add any specific styles for the chart canvas */
-  }
+/* Start Button */
+.start-button {
+  background-color: #4CAF50; /* Green color */
+  color: white;
+}
+
+.start-button:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+/* Stop Button */
+.stop-button {
+  background-color: #f44336; /* Red color */
+  color: white;
+}
+
+.stop-button:hover {
+  background-color: #d32f2f; /* Darker red color on hover */
+}
+
+#chart-container {
+  max-width: 800px; /* Increased max-width */
+  margin-top: 30px; /* Adjusted margin-top */
+}

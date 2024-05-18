@@ -2,20 +2,31 @@ import requests as r
 import json
 import time
 import numpy as np
-import threading
-import random
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-url = 'http://172.20.10.1/get?'
-what_to_get = ['acc', 'accX', 'accY', 'accZ']
+# Define the port on which the server will listen
+PORT = 8000
 
-start_time = time.time()
-data_dict = {}
-alreadymoving = False
-movementtimes = 0
-    
+class RequestHandler(BaseHTTPRequestHandler):
+    def _set_headers(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+
+    def do_GET(self):
+        self._set_headers()
+        acc_data = phyphox_data()
+        data = {
+            'acc': acc_data['acc'],
+            'accX': acc_data['accX'],
+            'accY': acc_data['accY'],
+            'accZ': acc_data['accZ']
+        }
+        self.wfile.write(json.dumps(data).encode())
+
 def phyphox_data():
-    
-    global data_dict
+    global start_time
     response = r.get(url + '&'.join(what_to_get)).text
     data = json.loads(response)
     
@@ -24,31 +35,27 @@ def phyphox_data():
     acc_dataY = data['buffer'][what_to_get[2]]['buffer'][0]
     acc_dataZ = data['buffer'][what_to_get[3]]['buffer'][0]
     
-    #apply high pass filter to data
-    if acc_data < 0.05:
+    # Apply high pass filter to data
+    if acc_data < 0.1:
         acc_data = 0
-    if acc_dataX < 0.05:
+    if acc_dataX < 0.1:
         acc_dataX = 0
-    if acc_dataY < 0.05:
+    if acc_dataY < 0.1:
         acc_dataY = 0
-    if acc_dataZ < 0.05:
+    if acc_dataZ < 0.1:
         acc_dataZ = 0
     current_time = time.time() - start_time
 
-        
-    with open('acceleration_data.txt', 'a') as file:
-        file.write(f'{current_time}, {acc_data},{acc_dataX},{acc_dataY},{acc_dataZ}\n')
-    
-    # Append data to dictionaries
-    print(acc_data)
-    return acc_data
-    # gyro_dict[current_time] = gyro_data
+    # Append data to dictionary
+    data_dict[current_time] = {'acc': acc_data, 'accX': acc_dataX, 'accY': acc_dataY, 'accZ': acc_dataZ}
     
     print(f'Time: {current_time:.2f}s, Acceleration: {acc_data}')
+    return data_dict[current_time]
+
 def fastFourierTransform(time_acc_dict):
     # Extract time and acceleration values from the dictionary
     time_values = np.array(list(time_acc_dict.keys()))
-    acceleration_values = np.array(list(time_acc_dict.values()))
+    acceleration_values = np.array([data['acc'] for data in time_acc_dict.values()])
 
     # Compute the FFT of acceleration values
     fft_result = np.fft.fft(acceleration_values)
@@ -59,24 +66,61 @@ def fastFourierTransform(time_acc_dict):
 
     return frequencies, fft_result
 
-# Collect data 100 times with a 1 second interval
-for i in range(0, 100):
-    if phyphox_data() < 0.1:
-        current_time = time.time() - start_time
-        data_dict[current_time] = phyphox_data()
-        if alreadymoving == True:
-            
-            alreadymoving = False
-    else:
-        if alreadymoving == False:
-            movementtimes += 1
-        
-        alreadymoving = True
-    
-    time.sleep(0.1)
-    
-returned_frequencies, returned_fft_result = fastFourierTransform(data_dict)
+# Define additional variables and parameters
+start_time = time.time()
+data_dict = {}
+movement_detected = False
+movement_times = []
+sampling_interval = 0.1  # Sampling interval in seconds
+url = 'http://172.20.10.1/get?'
+what_to_get = ['acc', 'accX', 'accY', 'accZ']
 
-print(returned_frequencies)
-print(movementtimes)
-print((movementtimes/(time.time() - start_time)))
+def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f'Starting server on port {port}')
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    # Start the server in a separate thread
+    import threading
+    server_thread = threading.Thread(target=run, kwargs={'port': PORT})
+    server_thread.daemon = True
+    server_thread.start()
+
+    # Collect data for a certain duration
+    duration = 3  # Duration in seconds
+    end_time = start_time + duration
+
+    while time.time() < end_time:
+        acc_data = phyphox_data()
+        
+        if acc_data['acc'] > 0.1:
+            if not movement_detected:
+                movement_times.append(time.time())
+                movement_detected = True
+        else:
+            movement_detected = False
+
+        time.sleep(sampling_interval)
+
+    # Perform FFT on the collected data
+    returned_frequencies, returned_fft_result = fastFourierTransform(data_dict)
+
+    # Remove the first item from the arrays
+    returned_frequencies = returned_frequencies[1:]
+    returned_fft_result = returned_fft_result[1:]
+    power_spectrum = np.abs(returned_fft_result)**2
+
+    # Find the index of the maximum power frequency
+    max_power_freq_index = np.argmax(power_spectrum)
+    max_power_freq = returned_frequencies[max_power_freq_index]
+
+    # Calculate time intervals between consecutive movements at the maximum power frequency
+    movement_intervals = np.diff(movement_times)
+
+    print("Power Spectrum:")
+    print(power_spectrum)
+    print(returned_frequencies)
+    print("Max Power Frequency:", max_power_freq, "Hz")
+    print("Time Intervals between Movements at Max Power Frequency:", movement_intervals)
