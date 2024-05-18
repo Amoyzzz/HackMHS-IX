@@ -3,6 +3,8 @@ import json
 import time
 import numpy as np
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import matplotlib.pyplot as plt
+
 
 # Define the port on which the server will listen
 PORT = 8000
@@ -36,13 +38,13 @@ def phyphox_data():
     acc_dataZ = data['buffer'][what_to_get[3]]['buffer'][0]
     
     # Apply high pass filter to data
-    if acc_data < 0.1:
+    if acc_data < 0.09:
         acc_data = 0
-    if acc_dataX < 0.1:
+    if acc_dataX < 0.09:
         acc_dataX = 0
-    if acc_dataY < 0.1:
+    if acc_dataY < 0.09:
         acc_dataY = 0
-    if acc_dataZ < 0.1:
+    if acc_dataZ < 0.09:
         acc_dataZ = 0
     current_time = time.time() - start_time
 
@@ -87,7 +89,7 @@ server_thread.daemon = True
 server_thread.start()
 
 # Collect data for a certain duration
-duration = 84600  # Duration in seconds
+duration = 5  # Duration in seconds
 end_time = start_time + duration
 
 while time.time() < end_time:
@@ -95,12 +97,12 @@ while time.time() < end_time:
     
     if acc_data['acc'] > 0.1:
         if not movement_detected:
-            movement_times.append(time.time())
+            movement_times.append(time.time()-start_time)
             movement_detected = True
     else:
         movement_detected = False
 
-    time.sleep(sampling_interval)
+    time.sleep(sampling_interval-0.01)
 
 # Perform FFT on the collected data
 returned_frequencies, returned_fft_result = fastFourierTransform(data_dict)
@@ -122,3 +124,4 @@ print(power_spectrum)
 print(returned_frequencies)
 print("Max Power Frequency:", max_power_freq, "Hz")
 print("Time Intervals between Movements at Max Power Frequency:", movement_intervals)
+print(movement_times)
