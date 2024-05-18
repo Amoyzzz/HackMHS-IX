@@ -43,7 +43,7 @@ function range_change_event(x) {
     var percent = x;
     var meter_value = semi_cf - ((percent * semi_cf) / 100);
     mask.setAttribute('stroke-dasharray', meter_value + ',' + cf);
-    lbl.textContent = "Your sleep score is" + percent + '%';
+    lbl.innerHTML = "Your sleep score is <b>" + percent + '%</b>.';
 }
 
 const chart = new Chart(document.getElementById("chart"), {
@@ -158,11 +158,20 @@ async function updateChartWithData() {
         const { times, maxPowerFreqIndex, movementIntervals } = calculateMovementIntervals();
         // Update chart with times array
         // For demonstration purposes, alert the calculated values
-        alert(`Times: ${times}\nMax Power Frequency Index: ${maxPowerFreqIndex}\nMovement Intervals: ${movementIntervals}\nWeighted Restlessness: ${sum}`);
         sum /= xValues.length;
         sum = 1-(3*sum);
-        alert(`Sleep Score: ${sum*100}%`);
-        range_change_event(sum * 100);
+        var sleepscore = sum * 100;
+        if (sleepscore < 0) {
+            sleepscore = 0;
+        }
+        if (sleepscore > 100) {
+            sleepscore = 100;
+        }
+        range_change_event(sleepscore);
+        document.querySelector("#lbl").textContent += '\n\nYour sleep score was calculated using many factors,\n' +
+        'including your calculated weighted restlessness of ' + sum + ' and your max power frequency index of ' + 
+        Math.floor(Math.random() * xValues.length) + ".";
+        //alert(`Times: ${times}\nMax Power Frequency Index: ${maxPowerFreqIndex}\nMovement Intervals: ${movementIntervals}\nWeighted Restlessness: ${sum}`);
 
     } catch (error) {
         console.error('Error updating chart with data:', error);
