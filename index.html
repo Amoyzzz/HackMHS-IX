@@ -24,12 +24,23 @@
             <button class="button clear-button">Reset Graph and ALL DATA</button>
             <button class="button end-button">End and Display Results</button>
         </div>
-        <div class="gauge-container">
-            <div class="gauge">
-                <div class="gauge-fill"></div>
-                <div class="gauge-cover"></div>
-            </div>
-            <div class="gauge-text">0%</div>
+        <br><br><br><br><br><br><br><br>
+        <div id="wrapper">
+            <svg id="meter">
+                <circle id="outline_curves" class="circle outline"  cx="50%" cy="50%">
+                </circle>
+                <circle id="low" class="circle range" cx="50%" cy="50%" stroke="#FDE47F">
+                </circle>
+                <circle id="avg" class="circle range" cx="50%" cy="50%" stroke="#7CCCE5">
+                </circle>
+                <circle id="high" class="circle range" cx="50%" cy="50%" stroke="#E04644">
+                </circle>
+                <circle id="mask" class="circle" cx="50%" cy="50%" >
+                </circle>
+                <circle id="outline_ends" class="circle outline" cx="50%" cy="50%">
+                </circle>
+            </svg>
+            <p id="lbl" id="value" for="">Your sleep score is 0%</p>
         </div>
     </div>
 
