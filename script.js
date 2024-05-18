@@ -2,6 +2,29 @@ let xValues = [];
 let absAccel = [];
 let fetchDataInterval = null;
 
+document.addEventListener('DOMContentLoaded', function() {
+    const gaugeFill = document.querySelector('.gauge-fill');
+    const gaugeText = document.querySelector('.gauge-text');
+
+    // Set the percentage value
+    const percentage = 22.4;
+
+    // Calculate the rotation value for the fill
+    const rotationValue = (percentage / 100) * 180;
+
+    // Update the gauge fill rotation
+    gaugeFill.style.transform = `rotate(${rotationValue}deg)`;
+
+    // Update the gauge text
+    gaugeText.textContent = `${percentage}%`;
+
+    // Update the gauge color based on percentage
+    const gauge = document.querySelector('.gauge');
+    const gradientColor = `conic-gradient(#ff0000 ${percentage}%, #eee ${percentage}%)`;
+    gauge.style.background = gradientColor;
+});
+
+
 // Initialize the chart once when the page loads
 const chart = new Chart(document.getElementById("chart"), {
     type: "line",
