@@ -46,8 +46,6 @@ function range_change_event(x) {
     lbl.textContent = "Your sleep score is" + percent + '%';
 }
 
-slider.addEventListener('input', range_change_event);
-
 const chart = new Chart(document.getElementById("chart"), {
     type: "line",
     data: {
