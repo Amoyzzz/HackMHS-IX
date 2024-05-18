@@ -22,7 +22,7 @@ def phyphox_data():
     acc_data = data['buffer'][what_to_get[0]]['buffer'][0]
     
     #apply high pass filter to data
-    if acc_data < 0.05:
+    if acc_data < 0.1:
         acc_data = 0
     
     # Append data to dictionaries
