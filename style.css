@@ -1,53 +1,69 @@
-/* Global Styles */
-body {
-  background-color: rgb(31, 31, 31);
-  color: rgb(209, 209, 209);
-  text-align: center;
-  font-size: 18px; /* Increased font size */
+/* Resetting default margin and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+/* Body styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #222;
+  color: #ddd;
+}
+
+/* Centering container */
 .center {
+  text-align: center;
+  margin: 50px auto;
+  max-width: 600px;
+}
+
+/* Title styles */
+#title {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+/* Info paragraph styles */
+#info {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+/* Button styles */
+.button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Chart container styles */
+#chart-container {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
-  min-height: 100vh; /* Adjusted to min-height */
-  flex-direction: column; /* Center content vertically */
 }
 
-/* Button Styles */
-.button {
-  display: inline-block;
-  padding: 15px 30px; /* Increased padding */
-  font-size: 18px; /* Increased font size */
-  font-weight: bold;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+/* Chart canvas styles */
+#chart {
+  width: 100%;
+  height: 500px;
+  background-color: #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.start-button, .stop-button, .clear-button, .end-button {
+  flex: 1;
 }
 
-/* Start Button */
-.start-button {
-  background-color: #4CAF50; /* Green color */
-  color: white;
-}
-
-.start-button:hover {
-  background-color: #45a049; /* Darker green color on hover */
-}
-
-/* Stop Button */
-.stop-button {
-  background-color: #f44336; /* Red color */
-  color: white;
-}
-
-.stop-button:hover {
-  background-color: #d32f2f; /* Darker red color on hover */
-}
-
-#chart-container {
-  max-width: 800px; /* Increased max-width */
-  margin-top: 30px; /* Adjusted margin-top */
-}
