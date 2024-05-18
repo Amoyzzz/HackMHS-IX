@@ -20,7 +20,10 @@ def phyphox_data():
     
     # Extract acceleration and gyroscope data
     acc_data = data['buffer'][what_to_get[0]]['buffer'][0]
-    # gyro_data = data['buffer'][what_to_get[1]]['buffer'][0]   
+    
+    #apply high pass filter to data
+    if acc_data < 0.05:
+        acc_data = 0
     
     # Append data to dictionaries
     data_dict[current_time] = acc_data
@@ -42,6 +45,10 @@ def fastFourierTransform(time_acc_dict):
     return frequencies, fft_result
 
 # Collect data 100 times with a 1 second interval
-for i in range(0, 100):
+for i in range(0, 20):
     phyphox_data()
     time.sleep(1)
+    
+returned_frequencies, returned_fft_result = fastFourierTransform(data_dict)
+
+print(returned_frequencies)
