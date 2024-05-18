@@ -33,6 +33,8 @@ def phyphox_data():
         acc_dataY = 0
     if acc_dataZ < 0.05:
         acc_dataZ = 0
+    current_time = time.time() - start_time
+
         
     with open('acceleration_data.txt', 'a') as file:
         file.write(f'{current_time}, {acc_data},{acc_dataX},{acc_dataY},{acc_dataZ}\n')
