@@ -190,7 +190,7 @@ document.querySelector('.clear-button').addEventListener('click', () => {
 
 document.querySelector('.start-button').addEventListener('click', () => {
     // Make a POST request to start data fetching via Flask server
-    fetch('http://localhost:5000/start_phyphox_data_fetching', { method: 'POST' })
+    fetch('http://localhost:5000/phyphox_data_fetcher', { method: 'POST' })
         .then(response => {
             if (response.ok) {
                 console.log('Data fetching started successfully.');

@@ -19,7 +19,7 @@ def fetchDataAndUpdateChart():
         }
         yield data
 
-@app.route('/start_phyphox_data_fetching', methods=['POST'])
+@app.route('/phyphox_data_fetcher', methods=['POST'])
 def start_phyphox_data_fetching():
     global fetchDataInterval
     if fetchDataInterval is None:
