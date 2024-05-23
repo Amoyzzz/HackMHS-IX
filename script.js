@@ -189,11 +189,23 @@ document.querySelector('.clear-button').addEventListener('click', () => {
 });
 
 document.querySelector('.start-button').addEventListener('click', () => {
-    if (fetchDataInterval === null) {
-        fetchDataInterval = setInterval(fetchDataAndUpdateChart, 1000);
-        console.log('Data fetching started');
-    }
+    // Make a POST request to start data fetching via Flask server
+    fetch('http://localhost:5000/start_phyphox_data_fetching', { method: 'POST' })
+        .then(response => {
+            if (response.ok) {
+                console.log('Data fetching started successfully.');
+                // If the request was successful, start the data fetching interval locally
+                if (fetchDataInterval === null) {
+                    fetchDataInterval = setInterval(fetchDataAndUpdateChart, 1000);
+                    console.log('Local data fetching started');
+                }
+            } else {
+                console.error('Failed to start data fetching.');
+            }
+        })
+        .catch(error => console.error('Error starting data fetching:', error));
 });
+
 
 document.querySelector('.stop-button').addEventListener('click', () => {
     if (fetchDataInterval !== null) {
