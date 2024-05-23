@@ -5,6 +5,7 @@ import time
 import threading
 
 app = Flask(__name__)
+CORS(app)
 
 # Global variables to store data
 fetchDataInterval = None
