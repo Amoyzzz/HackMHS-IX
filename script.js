@@ -65,7 +65,7 @@ const chart = new Chart(document.getElementById("chart"), {
 async function fetchDataAndUpdateChart() {
     var exp = 1.0;
     try {
-        const response = await fetch('http://localhost:8000/get_data');
+        const response = await fetch('http://localhost:5000/get_data');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

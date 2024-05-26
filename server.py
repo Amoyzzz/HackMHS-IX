@@ -4,6 +4,8 @@ from flask import Flask, jsonify, request
 import time
 import threading
 
+from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
 
